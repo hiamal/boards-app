@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Mate</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Chat Mate</h2>
+            <button class="btn btn-block" onclick="createChatList()">Create Chat List</button>
+            <ul class="chat-list" id="chatList">
+                <li onclick="loadChatMessages(1)">Chat 1</li>
+                <li onclick="loadChatMessages(2)">Chat 2</li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <h2>Chat Messages</h2>
+            <div class="messages" id="messages">
+                <!-- Initially showing messages from Chat 1 -->
+                <div class="message">Message 1 from Chat 1</div>
+                <div class="message">Message 2 from Chat 1</div>
+                <div class="message">Message 3 from Chat 1</div>
+                <div class="message">Message 4 from Chat 1</div>
+                <div class="message">Message 5 from Chat 1</div>
+            </div>
+            <button class="btn btn-block" onclick="addChatMessage()">Add Chat Message</button> <!-- Moved to the bottom -->
+        </div>
+    </div>
+
+    <script>
+        function createChatList() {
+            const chatList = document.getElementById('chatList');
+            chatList.innerHTML = '';
+
+            for (let i = 1; i <= 2; i++) { // Adding 2 chat items
+                const li = document.createElement('li');
+                li.innerText = `Chat ${i}`;
+                li.onclick = () => loadChatMessages(i);
+                chatList.appendChild(li);
+            }
+        }
+
+        function loadChatMessages(chatId) {
+            const messages = document.getElementById('messages');
+            messages.innerHTML = '';
+
+            for (let i = 1; i <= 5; i++) { // Adding 5 messages per chat
+                const div = document.createElement('div');
+                div.className = 'message';
+                div.innerText = `Message ${i} from Chat ${chatId}`;
+                messages.appendChild(div);
+            }
+        }
+
+        function addChatMessage() {
+            const messages = document.getElementById('messages');
+            const messageCount = messages.children.length + 1;
+            const div = document.createElement('div');
+            div.className = 'message';
+            div.innerText = `New Message ${messageCount}`;
+            messages.appendChild(div);
+        }
+    </script>
+</body>
+</html>
