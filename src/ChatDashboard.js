@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from './firebaseConfig';
-import { doc, collection, addDoc, getDocs, updateDoc, deleteDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, collection, addDoc, getDocs, updateDoc, deleteDoc, getDoc, serverTimestamp, query, where } from 'firebase/firestore';
 import './ChatDashboard.css';
 
 const ChatDashboard = () => {
@@ -13,10 +13,13 @@ const ChatDashboard = () => {
     const [editingChatContent, setEditingChatContent] = useState('');
 
     useEffect(() => {
-        // Fetch chat lists
         const fetchChatLists = async () => {
             try {
-                const chatListsSnapshot = await getDocs(collection(db, 'ChatList'));
+                const user = auth.currentUser;
+                if (!user) return;
+
+                const q = query(collection(db, 'ChatList'), where('user', '==', doc(db, 'Users', user.uid)));
+                const chatListsSnapshot = await getDocs(q);
                 const lists = chatListsSnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
@@ -32,7 +35,6 @@ const ChatDashboard = () => {
 
     useEffect(() => {
         if (selectedChatId) {
-            // Fetch chat messages for the selected chat list
             const fetchChatMessages = async () => {
                 try {
                     const chatListRef = doc(db, 'ChatList', selectedChatId);
@@ -60,9 +62,12 @@ const ChatDashboard = () => {
         if (newChatListName.trim() === '') return;
 
         try {
+            const user = auth.currentUser;
+            if (!user) return;
+
             const docRef = await addDoc(collection(db, 'ChatList'), {
                 name: newChatListName,
-                user: doc(db, 'Users', auth.currentUser.uid),
+                user: doc(db, 'Users', user.uid),
                 created: serverTimestamp(),
                 lastModified: serverTimestamp(),
                 chatMessages: []
